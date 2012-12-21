@@ -7,8 +7,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -27,8 +27,8 @@ public class PlayScreen implements Screen {
     Sound dropSound;
     Music rainMusic;
     
-    OrthographicCamera camera;
     SpriteBatch batch;
+    Camera camera;
     
     Rectangle bucket, bedLeg;
     Array<Rectangle> raindrops;
@@ -40,6 +40,7 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(PailGame game) {
         this.game = game;
+        this.camera = game.camera;
 
         legImage = new Texture(Gdx.files.internal("leg.png"));
         sheetsImage = new Texture(Gdx.files.internal("sheets.png"));
@@ -56,9 +57,6 @@ public class PlayScreen implements Screen {
         
         rainMusic.setLooping(true);
         rainMusic.play();
-        
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
         
         batch = new SpriteBatch();
         
