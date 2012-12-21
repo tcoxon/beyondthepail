@@ -33,6 +33,7 @@ public class PlayScreen implements Screen {
     Rectangle bucket, bedLeg;
     Array<Rectangle> raindrops;
     float timeSinceLastDrop;
+    int dropsCaught;
     long rainSpeed, // # pixels per second the rain moves at
          rainPeriod; // # ms between each raindrop
     
@@ -60,6 +61,10 @@ public class PlayScreen implements Screen {
         
         batch = new SpriteBatch();
         
+        reset();
+    }
+    
+    public void reset() {
         bucket = new Rectangle();
         bucket.width = SPRITE_WIDTH;
         bucket.height = SPRITE_HEIGHT;
@@ -76,6 +81,7 @@ public class PlayScreen implements Screen {
         spawnRaindrop();
         rainSpeed = 200;
         rainPeriod = 1000;
+        dropsCaught = 0;
     }
 
     @Override
@@ -165,10 +171,14 @@ public class PlayScreen implements Screen {
         while (iter.hasNext()) {
             Rectangle raindrop = iter.next();
             raindrop.y -= rainSpeed * delta;
-            if (raindrop.y + raindrop.height < 0) iter.remove();
+            if (raindrop.y + raindrop.height < 0) {
+                game.setScreen(game.gameOverScreen);
+                iter.remove();
+            }
             
             if (raindrop.overlaps(bucket)) {
                 dropSound.play();
+                dropsCaught++;
                 iter.remove();
             }
         }

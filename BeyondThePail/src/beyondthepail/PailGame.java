@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class PailGame extends Game implements ApplicationListener {
 
-    Screen playScreen, pauseScreen;
+    Screen playScreen, pauseScreen, gameOverScreen;
     OrthographicCamera camera;
 
     @Override
@@ -17,6 +17,7 @@ public class PailGame extends Game implements ApplicationListener {
         
         playScreen = new PlayScreen(this);
         pauseScreen = new PauseScreen(this);
+        gameOverScreen = new GameOverScreen(this);
         
         setScreen(pauseScreen);
 	}
@@ -25,6 +26,7 @@ public class PailGame extends Game implements ApplicationListener {
 	public void dispose() {
 	    playScreen.dispose();
 	    pauseScreen.dispose();
+	    gameOverScreen.dispose();
 	}
 	
 }
