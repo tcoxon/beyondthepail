@@ -9,14 +9,16 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class PailGame implements ApplicationListener {
-    static final int BUCKET_WIDTH = 48, BUCKET_HEIGHT = 48,
+    static final int SPRITE_WIDTH = 48, SPRITE_HEIGHT = 48,
             BUCKET_SPEED = 800;
     
-    Texture dropImage, bucketImage;
+    TextureRegion[][] spritesheet;
+    TextureRegion dropImage, bucketImage;
     Sound dropSound;
     Music rainMusic;
     
@@ -27,8 +29,11 @@ public class PailGame implements ApplicationListener {
 	
 	@Override
 	public void create() {
-	    dropImage = new Texture(Gdx.files.internal("droplet.png"));
-	    bucketImage = new Texture(Gdx.files.internal("bucket.png"));
+	    spritesheet = TextureRegion.split(
+	            new Texture(Gdx.files.internal("sprites.png")),
+	            SPRITE_WIDTH, SPRITE_HEIGHT);
+	    dropImage = spritesheet[0][1];
+	    bucketImage = spritesheet[0][0];
 	    
 	    dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
 	    rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
@@ -42,8 +47,8 @@ public class PailGame implements ApplicationListener {
 	    batch = new SpriteBatch();
 	    
 	    bucket = new Rectangle();
-	    bucket.width = BUCKET_WIDTH;
-	    bucket.height = BUCKET_HEIGHT;
+	    bucket.width = SPRITE_WIDTH;
+	    bucket.height = SPRITE_HEIGHT;
 	    bucket.x = camera.viewportWidth / 2 - bucket.width / 2;
 	    bucket.y = 20;
 	}
