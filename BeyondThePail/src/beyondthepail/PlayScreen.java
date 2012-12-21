@@ -21,7 +21,7 @@ public class PlayScreen implements Screen {
     static final int SPRITE_WIDTH = 48, SPRITE_HEIGHT = 48,
             BUCKET_SPEED = 800, RAIN_SPEED = 200;
     
-    Texture spritesheetImage, legImage, sheetsImage;
+    Texture spritesheetImage, legImage, sheetsImage,bgImage;
     TextureRegion[][] spritesheet;
     TextureRegion dropImage, bucketImage;
     Sound dropSound;
@@ -45,6 +45,7 @@ public class PlayScreen implements Screen {
 
         legImage = new Texture(Gdx.files.internal("leg.png"));
         sheetsImage = new Texture(Gdx.files.internal("sheets.png"));
+        bgImage = new Texture(Gdx.files.internal("bg.png"));
         
         spritesheetImage = new Texture(Gdx.files.internal("sprites.png"));
         spritesheet = TextureRegion.split(
@@ -99,6 +100,7 @@ public class PlayScreen implements Screen {
         
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+        batch.draw(bgImage, 0, 0);
         batch.draw(bucketImage, bucket.x, bucket.y);
         for (Rectangle drop: raindrops) {
             batch.draw(dropImage, drop.x, drop.y);
