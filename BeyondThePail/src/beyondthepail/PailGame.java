@@ -2,6 +2,7 @@ package beyondthepail;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL10;
@@ -9,9 +10,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 
 public class PailGame implements ApplicationListener {
-    static final int BUCKET_WIDTH = 48, BUCKET_HEIGHT = 48;
+    static final int BUCKET_WIDTH = 48, BUCKET_HEIGHT = 48,
+            BUCKET_SPEED = 800;
     
     Texture dropImage, bucketImage;
     Sound dropSound;
@@ -48,11 +51,32 @@ public class PailGame implements ApplicationListener {
 	@Override
 	public void dispose() {
 	}
+	
+	protected void handleInput() {
+	    if (Gdx.input.isTouched()) {
+	        Vector3 touchPos = new Vector3();
+	        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+	        camera.unproject(touchPos);
+	        bucket.x = touchPos.x - bucket.width/2;
+	    }
+	    
+	    if (Gdx.input.isKeyPressed(Keys.LEFT))
+	        bucket.x -= BUCKET_SPEED * Gdx.graphics.getDeltaTime();
+	    if (Gdx.input.isKeyPressed(Keys.RIGHT))
+	        bucket.x += BUCKET_SPEED * Gdx.graphics.getDeltaTime();
+	    
+	    if (bucket.x < 0) bucket.x = 0;
+	    if (bucket.x > camera.viewportWidth - bucket.width)
+	        bucket.x = camera.viewportWidth - bucket.width;
+	    
+	}
 
 	@Override
 	public void render() {
 	    Gdx.gl.glClearColor(0, 0, 0.2f, 1);
 	    Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+	    
+	    handleInput();
 	    
 	    camera.update();
 	    
