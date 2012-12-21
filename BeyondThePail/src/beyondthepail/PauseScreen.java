@@ -1,8 +1,8 @@
 package beyondthepail;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL10;
 
 public class PauseScreen implements Screen {
 
@@ -16,7 +16,7 @@ public class PauseScreen implements Screen {
     public void render(float delta) {
         game.playScreen.render(delta);
         
-        if (Gdx.input.isTouched()) {
+        if (Gdx.input.isTouched() || Gdx.input.isKeyPressed(Keys.SPACE)) {
             resume();
         }
     }

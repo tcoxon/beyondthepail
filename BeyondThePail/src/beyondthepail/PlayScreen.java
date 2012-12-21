@@ -16,7 +16,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.TimeUtils;
 
 public class PlayScreen implements Screen {
     static final int SPRITE_WIDTH = 48, SPRITE_HEIGHT = 48,
@@ -83,14 +82,13 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        timeSinceLastDrop += delta;
         
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         
         if (game.getScreen() == this) {
-            handleInput();
-            updateRain();
+            handleInput(delta);
+            updateRain(delta);
         }
         
         camera.update();
@@ -127,7 +125,7 @@ public class PlayScreen implements Screen {
     public void resume() {
     }
 
-    protected void handleInput() {
+    protected void handleInput(float delta) {
         if (Gdx.input.isTouched()) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -136,14 +134,16 @@ public class PlayScreen implements Screen {
         }
         
         if (Gdx.input.isKeyPressed(Keys.LEFT))
-            bucket.x -= BUCKET_SPEED * Gdx.graphics.getDeltaTime();
+            bucket.x -= BUCKET_SPEED * delta;
         if (Gdx.input.isKeyPressed(Keys.RIGHT))
-            bucket.x += BUCKET_SPEED * Gdx.graphics.getDeltaTime();
+            bucket.x += BUCKET_SPEED * delta;
         
         if (bucket.x < 0) bucket.x = 0;
         if (bucket.x > camera.viewportWidth - bucket.width - bedLeg.width)
             bucket.x = camera.viewportWidth - bucket.width - bedLeg.width;
         
+        if (Gdx.input.isKeyPressed(Keys.ESCAPE))
+            game.setScreen(game.pauseScreen);
     }
     
     protected void spawnRaindrop() {
@@ -159,13 +159,14 @@ public class PlayScreen implements Screen {
         timeSinceLastDrop = 0.0f;
     }
     
-    protected void updateRain() {
+    protected void updateRain(float delta) {
+        timeSinceLastDrop += delta;
         if (timeSinceLastDrop*1000 > rainPeriod) spawnRaindrop();
         
         Iterator<Rectangle> iter = raindrops.iterator();
         while (iter.hasNext()) {
             Rectangle raindrop = iter.next();
-            raindrop.y -= rainSpeed * Gdx.graphics.getDeltaTime();
+            raindrop.y -= rainSpeed * delta;
             if (raindrop.y + raindrop.height < 0) iter.remove();
             
             if (raindrop.overlaps(bucket)) {
