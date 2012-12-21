@@ -77,8 +77,10 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         
-        handleInput();
-        updateRain();
+        if (game.getScreen() == this) {
+            handleInput();
+            updateRain();
+        }
         
         camera.update();
         
@@ -105,6 +107,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void pause() {
+        game.setScreen(game.pauseScreen);
     }
 
     @Override
