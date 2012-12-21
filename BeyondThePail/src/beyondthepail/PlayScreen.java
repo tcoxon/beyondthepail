@@ -22,7 +22,7 @@ public class PlayScreen implements Screen {
     static final int SPRITE_WIDTH = 48, SPRITE_HEIGHT = 48,
             BUCKET_SPEED = 800, RAIN_SPEED = 200;
     
-    Texture spritesheetImage;
+    Texture spritesheetImage, legImage, sheetsImage;
     TextureRegion[][] spritesheet;
     TextureRegion dropImage, bucketImage;
     Sound dropSound;
@@ -31,10 +31,10 @@ public class PlayScreen implements Screen {
     OrthographicCamera camera;
     SpriteBatch batch;
     
-    Rectangle bucket;
+    Rectangle bucket, bedLeg;
     Array<Rectangle> raindrops;
-    long lastDropTime,
-         rainSpeed, // # pixels per second the rain moves at
+    float timeSinceLastDrop;
+    long rainSpeed, // # pixels per second the rain moves at
          rainPeriod; // # ms between each raindrop
     
     PailGame game;
@@ -42,6 +42,9 @@ public class PlayScreen implements Screen {
     public PlayScreen(PailGame game) {
         this.game = game;
 
+        legImage = new Texture(Gdx.files.internal("leg.png"));
+        sheetsImage = new Texture(Gdx.files.internal("sheets.png"));
+        
         spritesheetImage = new Texture(Gdx.files.internal("sprites.png"));
         spritesheet = TextureRegion.split(
                 spritesheetImage,
@@ -66,6 +69,12 @@ public class PlayScreen implements Screen {
         bucket.x = camera.viewportWidth / 2 - bucket.width / 2;
         bucket.y = 20;
         
+        bedLeg = new Rectangle();
+        bedLeg.width = 122;
+        bedLeg.height = camera.viewportHeight;
+        bedLeg.x = camera.viewportWidth - bedLeg.width;
+        bedLeg.y = 0;
+        
         raindrops = new Array<Rectangle>();
         spawnRaindrop();
         rainSpeed = 200;
@@ -74,6 +83,8 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        timeSinceLastDrop += delta;
+        
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         
@@ -90,6 +101,8 @@ public class PlayScreen implements Screen {
         for (Rectangle drop: raindrops) {
             batch.draw(dropImage, drop.x, drop.y);
         }
+        batch.draw(legImage, 0, 0);
+        batch.draw(sheetsImage, 0, 20);
         batch.end();
     }
 
@@ -128,25 +141,26 @@ public class PlayScreen implements Screen {
             bucket.x += BUCKET_SPEED * Gdx.graphics.getDeltaTime();
         
         if (bucket.x < 0) bucket.x = 0;
-        if (bucket.x > camera.viewportWidth - bucket.width)
-            bucket.x = camera.viewportWidth - bucket.width;
+        if (bucket.x > camera.viewportWidth - bucket.width - bedLeg.width)
+            bucket.x = camera.viewportWidth - bucket.width - bedLeg.width;
         
     }
     
     protected void spawnRaindrop() {
         Rectangle raindrop = new Rectangle();
-        raindrop.x = MathUtils.random(camera.viewportWidth - SPRITE_WIDTH);
+        raindrop.x = MathUtils.random(
+                camera.viewportWidth - SPRITE_WIDTH - bedLeg.width);
         raindrop.y = camera.viewportHeight;
         raindrop.width = SPRITE_WIDTH;
         raindrop.height = SPRITE_HEIGHT;
         raindrops.add(raindrop);
-        lastDropTime = TimeUtils.millis();
         ++rainSpeed;
         --rainPeriod;
+        timeSinceLastDrop = 0.0f;
     }
     
     protected void updateRain() {
-        if (TimeUtils.millis()-lastDropTime > rainPeriod) spawnRaindrop();
+        if (timeSinceLastDrop*1000 > rainPeriod) spawnRaindrop();
         
         Iterator<Rectangle> iter = raindrops.iterator();
         while (iter.hasNext()) {
