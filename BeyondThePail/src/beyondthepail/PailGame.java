@@ -22,6 +22,7 @@ public class PailGame implements ApplicationListener {
     static final int SPRITE_WIDTH = 48, SPRITE_HEIGHT = 48,
             BUCKET_SPEED = 800, RAIN_SPEED = 200;
     
+    Texture spritesheetImage;
     TextureRegion[][] spritesheet;
     TextureRegion dropImage, bucketImage;
     Sound dropSound;
@@ -38,8 +39,9 @@ public class PailGame implements ApplicationListener {
 	
 	@Override
 	public void create() {
+	    spritesheetImage = new Texture(Gdx.files.internal("sprites.png"));
 	    spritesheet = TextureRegion.split(
-	            new Texture(Gdx.files.internal("sprites.png")),
+	            spritesheetImage,
 	            SPRITE_WIDTH, SPRITE_HEIGHT);
 	    dropImage = spritesheet[0][1];
 	    bucketImage = spritesheet[0][0];
@@ -69,6 +71,10 @@ public class PailGame implements ApplicationListener {
 
 	@Override
 	public void dispose() {
+	    spritesheetImage.dispose();
+	    dropSound.dispose();
+	    rainMusic.dispose();
+	    batch.dispose();
 	}
 	
 	protected void spawnRaindrop() {
